@@ -18,7 +18,7 @@ No web UI. No prompts. No surprises.
 
 ## Requirements
 
-- PHP 8.3+
+- PHP 8.4+
 - Symfony 7.4 LTS or 8.x
 - Doctrine DBAL 3.8+ or 4.x
 - A database supported by the Doctrine storage backend (PostgreSQL recommended, MySQL/MariaDB, SQLite)
