@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `periscope:queues` — on-demand depth of every observed Messenger transport.
   - `periscope:purge` — retention-driven cleanup with `--dry-run` and `--older-than`.
   - `periscope:health` — aggregated snapshot with `--threshold-failure-rate` / `--threshold-min-total` exiting with code 3 on breach for alerting scripts.
-- Project skeleton: PHPStan 2.x at max level, PHP-CS-Fixer ruleset, PHPUnit 13, GitHub Actions CI matrix (PHP 8.3/8.4, Symfony 7.4.*/8.0.*).
+- Project skeleton: PHPStan 2.x at max level, PHP-CS-Fixer ruleset, PHPUnit 12, GitHub Actions CI matrix (PHP 8.3/8.4, Symfony 7.4.*/8.0.*).
 - Exhaustive unit test suite (147 tests, 383 assertions) covering models, stamps, middleware, storage, internal helpers, formatter, CLI option parser, scheduler/transport/health components, and every `periscope:*` command via `CommandTester`.
 - Functional test booting a minimal kernel and verifying the container exposes every configuration parameter.
 - Local-only playground Symfony application (not committed) with Postgres running in Docker, documented in `docs/DEVELOPMENT.md`. End-to-end validation recorded dispatched → received → handled, received → retried → failed, scheduled_before → scheduled_after cycles; CLI commands verified with correct exit codes and machine-friendly output.
