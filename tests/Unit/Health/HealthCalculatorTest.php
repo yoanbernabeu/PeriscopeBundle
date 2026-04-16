@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Health;
 
+use DateTimeImmutable;
 use Doctrine\DBAL\DriverManager;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -41,7 +42,7 @@ final class HealthCalculatorTest extends TestCase
         $this->recordMessage([EventType::Dispatched, EventType::Received], transport: 'async');
         $this->recordMessage([EventType::Dispatched], transport: 'async');
 
-        $report = (new HealthCalculator($this->storage))->calculate(new \DateTimeImmutable('2026-04-16 00:00:00'));
+        $report = (new HealthCalculator($this->storage))->calculate(new DateTimeImmutable('2026-04-16 00:00:00'));
 
         self::assertSame(5, $report->total);
         self::assertSame(2, $report->succeeded);
@@ -53,7 +54,7 @@ final class HealthCalculatorTest extends TestCase
 
     public function testEmptyWindowYieldsZeroFailureRate(): void
     {
-        $report = (new HealthCalculator($this->storage))->calculate(new \DateTimeImmutable('2026-04-16 00:00:00'));
+        $report = (new HealthCalculator($this->storage))->calculate(new DateTimeImmutable('2026-04-16 00:00:00'));
 
         self::assertSame(0, $report->total);
         self::assertSame(0.0, $report->failureRate);
@@ -65,7 +66,7 @@ final class HealthCalculatorTest extends TestCase
     private function recordMessage(array $events, string $transport): void
     {
         $id = Uuid::v7();
-        $clock = new \DateTimeImmutable('2026-04-16 10:00:00');
+        $clock = new DateTimeImmutable('2026-04-16 10:00:00');
 
         foreach ($events as $index => $type) {
             $this->storage->record(new RecordedEvent(

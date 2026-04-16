@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Scheduler;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\Scheduler\RecurringMessage;
 use Symfony\Component\Scheduler\Schedule;
@@ -18,11 +21,11 @@ final class ScheduleInspectorTest extends TestCase
 {
     public function testDescribesRecurringMessagesAcrossProviders(): void
     {
-        $now = new \DateTimeImmutable('2026-04-16 12:00:00', new \DateTimeZone('UTC'));
+        $now = new DateTimeImmutable('2026-04-16 12:00:00', new DateTimeZone('UTC'));
 
         $provider = $this->providerWith([
-            RecurringMessage::every('30 seconds', new \stdClass()),
-            RecurringMessage::every('5 minutes', new \stdClass()),
+            RecurringMessage::every('30 seconds', new stdClass()),
+            RecurringMessage::every('5 minutes', new stdClass()),
         ]);
 
         $locator = self::locator(['default' => $provider]);
@@ -33,17 +36,17 @@ final class ScheduleInspectorTest extends TestCase
 
         self::assertCount(2, $descriptors);
         self::assertSame('default', $descriptors[0]->scheduleName);
-        self::assertSame(\stdClass::class, $descriptors[0]->messageClass);
+        self::assertSame(stdClass::class, $descriptors[0]->messageClass);
         self::assertSame(0, $descriptors[0]->position);
         self::assertSame(1, $descriptors[1]->position);
     }
 
     public function testTriggerLabelAndNextRunAreResolved(): void
     {
-        $now = new \DateTimeImmutable('2026-04-16 12:00:00', new \DateTimeZone('UTC'));
+        $now = new DateTimeImmutable('2026-04-16 12:00:00', new DateTimeZone('UTC'));
 
         $trigger = new PeriodicalTrigger('5 minutes', $now);
-        $recurring = RecurringMessage::trigger($trigger, new \stdClass());
+        $recurring = RecurringMessage::trigger($trigger, new stdClass());
 
         $provider = $this->providerWith([$recurring]);
         $locator = self::locator(['timed' => $provider]);

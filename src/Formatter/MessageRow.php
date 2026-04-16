@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Formatter;
 
+use DateTimeInterface;
 use YoanBernabeu\PeriscopeBundle\Storage\MessageAggregate;
 
 /**
@@ -27,12 +28,12 @@ final readonly class MessageRow implements RowInterface
             'status' => $aggregate->status->value,
             'class' => self::shorten($aggregate->messageClass),
             'attempts' => $aggregate->attempts,
-            'transport' => [] === $aggregate->transports ? null : \implode(',', $aggregate->transports),
+            'transport' => [] === $aggregate->transports ? null : implode(',', $aggregate->transports),
             'handler' => [] === $aggregate->handlers ? null : self::shorten($aggregate->handlers[0]),
             'scheduled' => $aggregate->scheduled ? 'yes' : 'no',
             'duration_ms' => $aggregate->durationMs,
             'last_error' => $aggregate->lastErrorMessage,
-            'last_seen_at' => $aggregate->lastSeenAt->format(\DateTimeInterface::ATOM),
+            'last_seen_at' => $aggregate->lastSeenAt->format(DateTimeInterface::ATOM),
         ]);
     }
 
@@ -51,8 +52,8 @@ final readonly class MessageRow implements RowInterface
 
     private static function shorten(string $fqcn): string
     {
-        $pos = \strrpos($fqcn, '\\');
+        $pos = strrpos($fqcn, '\\');
 
-        return false === $pos ? $fqcn : \substr($fqcn, $pos + 1);
+        return false === $pos ? $fqcn : substr($fqcn, $pos + 1);
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Transport;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use YoanBernabeu\PeriscopeBundle\Formatter\RowInterface;
 
 /**
@@ -16,7 +18,7 @@ final readonly class QueueDepthSnapshot implements RowInterface
         public ?int $count,
         public bool $supported,
         public string $adapter,
-        public \DateTimeImmutable $takenAt,
+        public DateTimeImmutable $takenAt,
     ) {
     }
 
@@ -34,7 +36,7 @@ final readonly class QueueDepthSnapshot implements RowInterface
             'transport' => $this->transport,
             'count' => $this->supported ? $this->count : null,
             'adapter' => $this->adapter,
-            'taken_at' => $this->takenAt->format(\DateTimeInterface::ATOM),
+            'taken_at' => $this->takenAt->format(DateTimeInterface::ATOM),
         ];
     }
 }

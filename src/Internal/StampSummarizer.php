@@ -59,7 +59,7 @@ final readonly class StampSummarizer
             }
         }
 
-        if (\class_exists(ScheduledStamp::class) && null !== $envelope->last(ScheduledStamp::class)) {
+        if (class_exists(ScheduledStamp::class) && null !== $envelope->last(ScheduledStamp::class)) {
             $summary['scheduled'] = true;
         }
 
@@ -68,7 +68,7 @@ final readonly class StampSummarizer
 
     public function isScheduled(Envelope $envelope): bool
     {
-        return \class_exists(ScheduledStamp::class)
+        return class_exists(ScheduledStamp::class)
             && null !== $envelope->last(ScheduledStamp::class);
     }
 

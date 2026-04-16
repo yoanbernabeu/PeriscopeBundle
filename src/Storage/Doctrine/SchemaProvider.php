@@ -19,7 +19,7 @@ final readonly class SchemaProvider
 {
     /**
      * @param non-empty-string $tablePrefix
-     * @param non-empty-string|null $pgSchema   Optional PostgreSQL schema name. When non-null, the table prefix is dropped and the table lives as `<pgSchema>.events`.
+     * @param non-empty-string|null $pgSchema Optional PostgreSQL schema name. When non-null, the table prefix is dropped and the table lives as `<pgSchema>.events`.
      */
     public function __construct(
         private string $tablePrefix = 'periscope_',

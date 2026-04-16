@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Internal;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use YoanBernabeu\PeriscopeBundle\Internal\PayloadExtractor;
@@ -13,7 +15,7 @@ final class PayloadExtractorTest extends TestCase
 {
     public function testExtractPublicScalarProperties(): void
     {
-        $message = new class() {
+        $message = new class {
             public string $to = 'user@example.com';
 
             public int $attempts = 3;
@@ -35,7 +37,7 @@ final class PayloadExtractorTest extends TestCase
 
     public function testMaskingIsCaseInsensitive(): void
     {
-        $message = new class() {
+        $message = new class {
             public string $email = 'user@example.com';
 
             public string $password = 'hunter2';
@@ -52,7 +54,7 @@ final class PayloadExtractorTest extends TestCase
 
     public function testNestedArraysAreMaskedRecursively(): void
     {
-        $message = new class() {
+        $message = new class {
             /** @var array<string, mixed> */
             public array $credentials = [
                 'username' => 'admin',
@@ -72,7 +74,7 @@ final class PayloadExtractorTest extends TestCase
 
     public function testNestedObjectsAreUnwound(): void
     {
-        $inner = new class() {
+        $inner = new class {
             public string $region = 'eu-west-1';
         };
 
@@ -90,10 +92,10 @@ final class PayloadExtractorTest extends TestCase
 
     public function testDatetimesAreFormattedAsAtom(): void
     {
-        $moment = new \DateTimeImmutable('2026-04-16 12:00:00', new \DateTimeZone('UTC'));
+        $moment = new DateTimeImmutable('2026-04-16 12:00:00', new DateTimeZone('UTC'));
 
         $message = new class($moment) {
-            public function __construct(public \DateTimeImmutable $when)
+            public function __construct(public DateTimeImmutable $when)
             {
             }
         };
@@ -105,7 +107,7 @@ final class PayloadExtractorTest extends TestCase
 
     public function testBackedEnumsBecomeTheirScalarValue(): void
     {
-        $message = new class() {
+        $message = new class {
             public Priority $priority = Priority::High;
         };
 
@@ -116,7 +118,7 @@ final class PayloadExtractorTest extends TestCase
 
     public function testPrivatePropertiesAreIgnored(): void
     {
-        $message = new class() {
+        $message = new class {
             public string $public = 'shown';
 
             private string $hidden = 'secret'; // @phpstan-ignore property.onlyWritten

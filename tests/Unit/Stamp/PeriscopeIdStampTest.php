@@ -18,7 +18,7 @@ final class PeriscopeIdStampTest extends TestCase
     {
         self::assertContains(
             StampInterface::class,
-            (array) \class_implements(PeriscopeIdStamp::class),
+            (array) class_implements(PeriscopeIdStamp::class),
         );
     }
 

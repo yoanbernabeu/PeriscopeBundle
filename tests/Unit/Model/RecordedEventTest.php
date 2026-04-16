@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Model;
 
+use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Uid\Uuid;
@@ -16,7 +17,7 @@ final class RecordedEventTest extends TestCase
     public function testEveryFieldIsExposedReadOnly(): void
     {
         $uuid = Uuid::v7();
-        $createdAt = new \DateTimeImmutable('2026-04-16 12:00:00');
+        $createdAt = new DateTimeImmutable('2026-04-16 12:00:00');
 
         $event = new RecordedEvent(
             id: 42,
@@ -73,7 +74,7 @@ final class RecordedEventTest extends TestCase
             durationMs: null,
             scheduled: false,
             metadata: null,
-            createdAt: new \DateTimeImmutable(),
+            createdAt: new DateTimeImmutable(),
         );
 
         self::assertNull($event->id);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Command;
 
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -50,7 +51,7 @@ final class ShowMessageCommand extends Command
             $id = $this->resolveId($input);
             $format = CommonOptions::resolveFormat($input);
             $columns = CommonOptions::resolveFields($input, EventRow::defaultColumns()) ?? EventRow::defaultColumns();
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             $output->writeln(\sprintf('<error>%s</error>', $exception->getMessage()));
 
             return Command::INVALID;
@@ -62,7 +63,7 @@ final class ShowMessageCommand extends Command
             return 1;
         }
 
-        $rows = \array_map(EventRow::fromEvent(...), $events);
+        $rows = array_map(EventRow::fromEvent(...), $events);
         $this->renderer->render($rows, $columns, $format, $output);
 
         return Command::SUCCESS;
@@ -72,11 +73,11 @@ final class ShowMessageCommand extends Command
     {
         $raw = $input->getArgument('id');
         if (!\is_string($raw) || '' === $raw) {
-            throw new \InvalidArgumentException('The id argument must be a non-empty UUID.');
+            throw new InvalidArgumentException('The id argument must be a non-empty UUID.');
         }
 
         if (!Uuid::isValid($raw)) {
-            throw new \InvalidArgumentException(\sprintf('The id "%s" is not a valid UUID.', $raw));
+            throw new InvalidArgumentException(\sprintf('The id "%s" is not a valid UUID.', $raw));
         }
 
         return Uuid::fromString($raw);

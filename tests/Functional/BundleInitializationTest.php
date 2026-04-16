@@ -22,8 +22,8 @@ final class BundleInitializationTest extends KernelTestCase
         // boot that is not cleaned up automatically, which PHPUnit 11 flags as
         // risky. Popping any handlers that were pushed during the test keeps
         // the suite strict without each test having to remember.
-        \restore_exception_handler();
-        \restore_exception_handler();
+        restore_exception_handler();
+        restore_exception_handler();
     }
 
     public function testContainerBootsWithDefaultConfiguration(): void

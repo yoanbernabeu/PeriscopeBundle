@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Transport;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use YoanBernabeu\PeriscopeBundle\Transport\QueueDepthSnapshot;
@@ -21,7 +23,7 @@ final class QueueDepthSnapshotTest extends TestCase
 
     public function testUnsupportedTransportEmitsNullCount(): void
     {
-        $takenAt = new \DateTimeImmutable('2026-04-16 12:00:00', new \DateTimeZone('UTC'));
+        $takenAt = new DateTimeImmutable('2026-04-16 12:00:00', new DateTimeZone('UTC'));
 
         $snapshot = new QueueDepthSnapshot(
             transport: 'async',
@@ -41,7 +43,7 @@ final class QueueDepthSnapshotTest extends TestCase
             count: 7,
             supported: true,
             adapter: 'DoctrineTransport',
-            takenAt: new \DateTimeImmutable('2026-04-16 12:00:00', new \DateTimeZone('UTC')),
+            takenAt: new DateTimeImmutable('2026-04-16 12:00:00', new DateTimeZone('UTC')),
         );
 
         $columns = $snapshot->toColumns();

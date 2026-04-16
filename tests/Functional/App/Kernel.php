@@ -30,7 +30,7 @@ final class Kernel extends BaseKernel
 
     public function registerContainerConfiguration(LoaderInterface $loader): void
     {
-        $loader->load(function (ContainerBuilder $container): void {
+        $loader->load(static function (ContainerBuilder $container): void {
             $container->loadFromExtension('framework', [
                 'test' => true,
                 'secret' => 'test',
@@ -56,11 +56,11 @@ final class Kernel extends BaseKernel
 
     public function getCacheDir(): string
     {
-        return \sys_get_temp_dir().'/periscope-bundle-tests/cache/'.$this->environment;
+        return sys_get_temp_dir() . '/periscope-bundle-tests/cache/' . $this->environment;
     }
 
     public function getLogDir(): string
     {
-        return \sys_get_temp_dir().'/periscope-bundle-tests/log';
+        return sys_get_temp_dir() . '/periscope-bundle-tests/log';
     }
 }

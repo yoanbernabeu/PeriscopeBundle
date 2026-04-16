@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Storage\Doctrine;
 
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Component\Uid\Uuid;
 use YoanBernabeu\PeriscopeBundle\Model\EventType;
 use YoanBernabeu\PeriscopeBundle\Model\MessageStatus;
@@ -51,12 +53,12 @@ final class DoctrineStorageTest extends TestCase
     public function testRecordAndFindEvents(): void
     {
         $id = Uuid::v7();
-        $dispatched = $this->makeEvent($id, EventType::Dispatched, new \DateTimeImmutable('2026-04-16 12:00:00'));
-        $received = $this->makeEvent($id, EventType::Received, new \DateTimeImmutable('2026-04-16 12:00:01'));
+        $dispatched = $this->makeEvent($id, EventType::Dispatched, new DateTimeImmutable('2026-04-16 12:00:00'));
+        $received = $this->makeEvent($id, EventType::Received, new DateTimeImmutable('2026-04-16 12:00:01'));
         $handled = $this->makeEvent(
             $id,
             EventType::Handled,
-            new \DateTimeImmutable('2026-04-16 12:00:02'),
+            new DateTimeImmutable('2026-04-16 12:00:02'),
             handler: 'App\\MessageHandler\\SendEmailHandler',
             durationMs: 1000,
         );
@@ -78,12 +80,12 @@ final class DoctrineStorageTest extends TestCase
     {
         $id = Uuid::v7();
 
-        $this->storage->record($this->makeEvent($id, EventType::Dispatched, new \DateTimeImmutable('2026-04-16 12:00:00'), transport: 'async'));
-        $this->storage->record($this->makeEvent($id, EventType::Received, new \DateTimeImmutable('2026-04-16 12:00:01'), transport: 'async'));
+        $this->storage->record($this->makeEvent($id, EventType::Dispatched, new DateTimeImmutable('2026-04-16 12:00:00'), transport: 'async'));
+        $this->storage->record($this->makeEvent($id, EventType::Received, new DateTimeImmutable('2026-04-16 12:00:01'), transport: 'async'));
         $this->storage->record($this->makeEvent(
             $id,
             EventType::Handled,
-            new \DateTimeImmutable('2026-04-16 12:00:02'),
+            new DateTimeImmutable('2026-04-16 12:00:02'),
             transport: 'async',
             handler: 'App\\MessageHandler\\SendEmailHandler',
             durationMs: 500,
@@ -105,24 +107,24 @@ final class DoctrineStorageTest extends TestCase
     {
         $id = Uuid::v7();
 
-        $this->storage->record($this->makeEvent($id, EventType::Dispatched, new \DateTimeImmutable('2026-04-16 12:00:00'), transport: 'async'));
-        $this->storage->record($this->makeEvent($id, EventType::Received, new \DateTimeImmutable('2026-04-16 12:00:01'), transport: 'async'));
+        $this->storage->record($this->makeEvent($id, EventType::Dispatched, new DateTimeImmutable('2026-04-16 12:00:00'), transport: 'async'));
+        $this->storage->record($this->makeEvent($id, EventType::Received, new DateTimeImmutable('2026-04-16 12:00:01'), transport: 'async'));
         $this->storage->record($this->makeEvent(
             $id,
             EventType::Failed,
-            new \DateTimeImmutable('2026-04-16 12:00:02'),
+            new DateTimeImmutable('2026-04-16 12:00:02'),
             transport: 'async',
-            errorClass: \RuntimeException::class,
+            errorClass: RuntimeException::class,
             errorMessage: 'first try',
         ));
-        $this->storage->record($this->makeEvent($id, EventType::Retried, new \DateTimeImmutable('2026-04-16 12:00:03'), transport: 'async'));
-        $this->storage->record($this->makeEvent($id, EventType::Received, new \DateTimeImmutable('2026-04-16 12:00:04'), transport: 'async'));
+        $this->storage->record($this->makeEvent($id, EventType::Retried, new DateTimeImmutable('2026-04-16 12:00:03'), transport: 'async'));
+        $this->storage->record($this->makeEvent($id, EventType::Received, new DateTimeImmutable('2026-04-16 12:00:04'), transport: 'async'));
         $this->storage->record($this->makeEvent(
             $id,
             EventType::Failed,
-            new \DateTimeImmutable('2026-04-16 12:00:05'),
+            new DateTimeImmutable('2026-04-16 12:00:05'),
             transport: 'async',
-            errorClass: \RuntimeException::class,
+            errorClass: RuntimeException::class,
             errorMessage: 'second try',
         ));
 
@@ -139,8 +141,8 @@ final class DoctrineStorageTest extends TestCase
         $old = Uuid::v7();
         $recent = Uuid::v7();
 
-        $this->storage->record($this->makeEvent($old, EventType::Dispatched, new \DateTimeImmutable('2026-04-15 12:00:00')));
-        $this->storage->record($this->makeEvent($recent, EventType::Dispatched, new \DateTimeImmutable('2026-04-16 12:00:00')));
+        $this->storage->record($this->makeEvent($old, EventType::Dispatched, new DateTimeImmutable('2026-04-15 12:00:00')));
+        $this->storage->record($this->makeEvent($recent, EventType::Dispatched, new DateTimeImmutable('2026-04-16 12:00:00')));
 
         $messages = $this->storage->findMessages(new MessageFilter());
 
@@ -154,8 +156,8 @@ final class DoctrineStorageTest extends TestCase
         $async = Uuid::v7();
         $priority = Uuid::v7();
 
-        $this->storage->record($this->makeEvent($async, EventType::Dispatched, new \DateTimeImmutable('2026-04-16 12:00:00'), transport: 'async'));
-        $this->storage->record($this->makeEvent($priority, EventType::Dispatched, new \DateTimeImmutable('2026-04-16 12:01:00'), transport: 'high_priority'));
+        $this->storage->record($this->makeEvent($async, EventType::Dispatched, new DateTimeImmutable('2026-04-16 12:00:00'), transport: 'async'));
+        $this->storage->record($this->makeEvent($priority, EventType::Dispatched, new DateTimeImmutable('2026-04-16 12:01:00'), transport: 'high_priority'));
 
         $messages = $this->storage->findMessages(new MessageFilter(transports: ['high_priority']));
 
@@ -165,19 +167,19 @@ final class DoctrineStorageTest extends TestCase
 
     public function testCountMessages(): void
     {
-        $this->storage->record($this->makeEvent(Uuid::v7(), EventType::Dispatched, new \DateTimeImmutable('2026-04-16 12:00:00')));
-        $this->storage->record($this->makeEvent(Uuid::v7(), EventType::Dispatched, new \DateTimeImmutable('2026-04-16 12:00:01')));
-        $this->storage->record($this->makeEvent(Uuid::v7(), EventType::Dispatched, new \DateTimeImmutable('2026-04-16 12:00:02')));
+        $this->storage->record($this->makeEvent(Uuid::v7(), EventType::Dispatched, new DateTimeImmutable('2026-04-16 12:00:00')));
+        $this->storage->record($this->makeEvent(Uuid::v7(), EventType::Dispatched, new DateTimeImmutable('2026-04-16 12:00:01')));
+        $this->storage->record($this->makeEvent(Uuid::v7(), EventType::Dispatched, new DateTimeImmutable('2026-04-16 12:00:02')));
 
         self::assertSame(3, $this->storage->countMessages(new MessageFilter()));
     }
 
     public function testPurgeOlderThanRemovesOnlyOldRows(): void
     {
-        $this->storage->record($this->makeEvent(Uuid::v7(), EventType::Dispatched, new \DateTimeImmutable('2026-03-01 12:00:00')));
-        $this->storage->record($this->makeEvent(Uuid::v7(), EventType::Dispatched, new \DateTimeImmutable('2026-04-15 12:00:00')));
+        $this->storage->record($this->makeEvent(Uuid::v7(), EventType::Dispatched, new DateTimeImmutable('2026-03-01 12:00:00')));
+        $this->storage->record($this->makeEvent(Uuid::v7(), EventType::Dispatched, new DateTimeImmutable('2026-04-15 12:00:00')));
 
-        $deleted = $this->storage->purgeOlderThan(new \DateTimeImmutable('2026-04-01 00:00:00'));
+        $deleted = $this->storage->purgeOlderThan(new DateTimeImmutable('2026-04-01 00:00:00'));
 
         self::assertSame(1, $deleted);
         self::assertSame(1, $this->storage->countMessages(new MessageFilter()));
@@ -203,7 +205,7 @@ final class DoctrineStorageTest extends TestCase
             durationMs: null,
             scheduled: false,
             metadata: null,
-            createdAt: new \DateTimeImmutable('2026-04-16 12:00:00'),
+            createdAt: new DateTimeImmutable('2026-04-16 12:00:00'),
         ));
 
         $events = $this->storage->findEvents($id);
@@ -216,7 +218,7 @@ final class DoctrineStorageTest extends TestCase
     private function makeEvent(
         Uuid $id,
         EventType $type,
-        \DateTimeImmutable $createdAt,
+        DateTimeImmutable $createdAt,
         ?string $transport = null,
         ?string $handler = null,
         ?int $durationMs = null,

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Cli;
 
+use DateTimeImmutable;
+use DateTimeInterface;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
@@ -38,7 +41,7 @@ final class CommonOptionsTest extends TestCase
 
     public function testResolveFormatRejectsUnknownValue(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid --format value "xml"');
 
         CommonOptions::resolveFormat($this->buildInput(['--format' => 'xml']));
@@ -59,7 +62,7 @@ final class CommonOptionsTest extends TestCase
 
     public function testResolveFieldsRejectsUnknownField(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Unknown field "foo"');
 
         CommonOptions::resolveFields($this->buildInput(['--fields' => 'id,foo']), ['id', 'status']);
@@ -67,9 +70,9 @@ final class CommonOptionsTest extends TestCase
 
     public function testResolveSinceReadsRelativeDuration(): void
     {
-        $before = new \DateTimeImmutable();
+        $before = new DateTimeImmutable();
         $since = CommonOptions::resolveSince($this->buildInput(['--since' => '2h']));
-        $after = new \DateTimeImmutable();
+        $after = new DateTimeImmutable();
 
         self::assertNotNull($since);
         self::assertLessThanOrEqual($before->modify('-2 hours')->getTimestamp() + 1, $since->getTimestamp());
@@ -81,7 +84,7 @@ final class CommonOptionsTest extends TestCase
         $since = CommonOptions::resolveSince($this->buildInput(['--since' => '2026-04-16T12:00:00Z']));
 
         self::assertNotNull($since);
-        self::assertSame('2026-04-16T12:00:00+00:00', $since->format(\DateTimeInterface::ATOM));
+        self::assertSame('2026-04-16T12:00:00+00:00', $since->format(DateTimeInterface::ATOM));
     }
 
     public function testResolveUntilIsNullWhenUnset(): void
@@ -101,7 +104,7 @@ final class CommonOptionsTest extends TestCase
 
     public function testResolveLimitRejectsZero(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('--limit must be >= 1');
 
         CommonOptions::resolveLimit($this->buildInput(['--limit' => '0']));
@@ -109,7 +112,7 @@ final class CommonOptionsTest extends TestCase
 
     public function testResolveOffsetRejectsNegative(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('--offset must be >= 0');
 
         CommonOptions::resolveOffset($this->buildInput(['--offset' => '-1']));

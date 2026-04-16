@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Model;
 
+use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -16,9 +17,9 @@ use Symfony\Component\Uid\Uuid;
 final readonly class RecordedEvent
 {
     /**
-     * @param array<string, mixed>|null $payload       JSON-serialisable payload snapshot (only on Dispatched)
+     * @param array<string, mixed>|null $payload JSON-serialisable payload snapshot (only on Dispatched)
      * @param array<string, mixed>|null $stampsSummary compact representation of the envelope stamps present when the event was recorded
-     * @param array<string, mixed>|null $metadata      free-form extension point for future fields
+     * @param array<string, mixed>|null $metadata free-form extension point for future fields
      */
     public function __construct(
         public ?int $id,
@@ -36,7 +37,7 @@ final readonly class RecordedEvent
         public ?int $durationMs,
         public bool $scheduled,
         public ?array $metadata,
-        public \DateTimeImmutable $createdAt,
+        public DateTimeImmutable $createdAt,
     ) {
     }
 }

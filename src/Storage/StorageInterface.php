@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Storage;
 
+use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
 use YoanBernabeu\PeriscopeBundle\Model\RecordedEvent;
 
@@ -40,5 +41,5 @@ interface StorageInterface
      * Removes events older than the given cutoff. Returns the number of rows
      * deleted.
      */
-    public function purgeOlderThan(\DateTimeImmutable $cutoff): int;
+    public function purgeOlderThan(DateTimeImmutable $cutoff): int;
 }

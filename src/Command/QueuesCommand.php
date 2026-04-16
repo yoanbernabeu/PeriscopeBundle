@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Command;
 
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,7 +39,7 @@ final class QueuesCommand extends Command
 
     protected function configure(): void
     {
-        $formats = \implode('|', \array_column(OutputFormat::cases(), 'value'));
+        $formats = implode('|', array_column(OutputFormat::cases(), 'value'));
         $this
             ->addOption('format', 'f', InputOption::VALUE_REQUIRED, \sprintf('Output format: %s.', $formats), OutputFormat::Auto->value)
             ->addOption('fields', null, InputOption::VALUE_REQUIRED, 'Comma-separated list of columns to emit.')
@@ -50,7 +51,7 @@ final class QueuesCommand extends Command
         try {
             $format = CommonOptions::resolveFormat($input);
             $columns = CommonOptions::resolveFields($input, QueueDepthSnapshot::defaultColumns()) ?? QueueDepthSnapshot::defaultColumns();
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             $output->writeln(\sprintf('<error>%s</error>', $exception->getMessage()));
 
             return Command::INVALID;

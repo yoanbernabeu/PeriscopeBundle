@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Internal;
 
+use BackedEnum;
+use DateTimeInterface;
+use ReflectionClass;
+use ReflectionProperty;
+use Stringable;
+use UnitEnum;
+
 /**
  * Produces a JSON-serialisable snapshot of a Messenger message payload,
  * masking any field whose name (case-insensitive) is configured as sensitive.
@@ -35,9 +42,9 @@ final readonly class PayloadExtractor
     private function snapshotObject(object $object): array
     {
         $data = [];
-        $reflection = new \ReflectionClass($object);
+        $reflection = new ReflectionClass($object);
 
-        foreach ($reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+        foreach ($reflection->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
             if ($property->isStatic()) {
                 continue;
             }
@@ -68,19 +75,19 @@ final readonly class PayloadExtractor
             return $normalized;
         }
 
-        if ($value instanceof \BackedEnum) {
+        if ($value instanceof BackedEnum) {
             return $value->value;
         }
 
-        if ($value instanceof \UnitEnum) {
+        if ($value instanceof UnitEnum) {
             return $value->name;
         }
 
-        if ($value instanceof \DateTimeInterface) {
-            return $value->format(\DateTimeInterface::ATOM);
+        if ($value instanceof DateTimeInterface) {
+            return $value->format(DateTimeInterface::ATOM);
         }
 
-        if ($value instanceof \Stringable) {
+        if ($value instanceof Stringable) {
             return (string) $value;
         }
 
@@ -93,9 +100,9 @@ final readonly class PayloadExtractor
 
     private function isMasked(string $name): bool
     {
-        $lower = \strtolower($name);
+        $lower = strtolower($name);
         foreach ($this->maskedFields as $masked) {
-            if ($lower === \strtolower($masked)) {
+            if ($lower === strtolower($masked)) {
                 return true;
             }
         }

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Scheduler;
 
+use DateTimeImmutable;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\Scheduler\Generator\MessageContext;
 use Symfony\Component\Scheduler\RecurringMessage;
 use Symfony\Component\Scheduler\ScheduleProviderInterface;
 use Symfony\Component\Scheduler\Trigger\TriggerInterface;
+use Throwable;
 
 /**
  * Enumerates all {@see ScheduleProviderInterface} services tagged
@@ -28,7 +30,7 @@ final readonly class ScheduleInspector
     public function __construct(
         #[AutowireLocator('scheduler.schedule_provider', 'name')]
         private ServiceLocator $schedules,
-        private \DateTimeImmutable $clock = new \DateTimeImmutable(),
+        private DateTimeImmutable $clock = new DateTimeImmutable(),
     ) {
     }
 
@@ -39,7 +41,7 @@ final readonly class ScheduleInspector
     {
         $descriptors = [];
 
-        foreach (\array_keys($this->schedules->getProvidedServices()) as $name) {
+        foreach (array_keys($this->schedules->getProvidedServices()) as $name) {
             if (!\is_string($name) || !$this->schedules->has($name)) {
                 continue;
             }
@@ -87,7 +89,7 @@ final readonly class ScheduleInspector
                     return $message;
                 }
             }
-        } catch (\Throwable) {
+        } catch (Throwable) {
             // Some message providers require real runtime state; treat as
             // unknown rather than letting the inspection fail.
         }
@@ -100,11 +102,11 @@ final readonly class ScheduleInspector
         return (string) $trigger;
     }
 
-    private function nextRun(TriggerInterface $trigger): ?\DateTimeImmutable
+    private function nextRun(TriggerInterface $trigger): ?DateTimeImmutable
     {
         try {
             return $trigger->getNextRunDate($this->clock);
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return null;
         }
     }

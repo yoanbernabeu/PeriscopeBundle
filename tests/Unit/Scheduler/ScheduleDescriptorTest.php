@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Scheduler;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use YoanBernabeu\PeriscopeBundle\Scheduler\ScheduleDescriptor;
@@ -21,7 +23,7 @@ final class ScheduleDescriptorTest extends TestCase
 
     public function testToColumnsShortensFqcnAndFormatsNextRun(): void
     {
-        $nextRun = new \DateTimeImmutable('2026-04-16 13:00:00', new \DateTimeZone('UTC'));
+        $nextRun = new DateTimeImmutable('2026-04-16 13:00:00', new DateTimeZone('UTC'));
 
         $descriptor = new ScheduleDescriptor(
             scheduleName: 'default',

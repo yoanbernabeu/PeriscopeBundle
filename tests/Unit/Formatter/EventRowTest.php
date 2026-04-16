@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Formatter;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Component\Uid\Uuid;
 use YoanBernabeu\PeriscopeBundle\Formatter\EventRow;
 use YoanBernabeu\PeriscopeBundle\Model\EventType;
@@ -40,7 +43,7 @@ final class EventRowTest extends TestCase
             durationMs: 42,
             scheduled: false,
             metadata: null,
-            createdAt: new \DateTimeImmutable('2026-04-16 12:00:00', new \DateTimeZone('UTC')),
+            createdAt: new DateTimeImmutable('2026-04-16 12:00:00', new DateTimeZone('UTC')),
         ));
 
         self::assertSame('2026-04-16T12:00:00+00:00', $row->fields['at']);
@@ -63,13 +66,13 @@ final class EventRowTest extends TestCase
             handler: null,
             payload: null,
             stampsSummary: null,
-            errorClass: \RuntimeException::class,
+            errorClass: RuntimeException::class,
             errorMessage: 'boom',
             errorTrace: null,
             durationMs: null,
             scheduled: false,
             metadata: null,
-            createdAt: new \DateTimeImmutable(),
+            createdAt: new DateTimeImmutable(),
         ));
 
         self::assertSame('boom', $row->fields['error']);

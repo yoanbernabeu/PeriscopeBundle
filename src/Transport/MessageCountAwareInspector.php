@@ -6,6 +6,7 @@ namespace YoanBernabeu\PeriscopeBundle\Transport;
 
 use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
+use Throwable;
 
 /**
  * Inspector that delegates to Symfony's own {@see MessageCountAwareInterface}.
@@ -29,7 +30,7 @@ final class MessageCountAwareInspector implements TransportInspectorInterface
 
         try {
             return $transport->getMessageCount();
-        } catch (\Throwable) {
+        } catch (Throwable) {
             return null;
         }
     }

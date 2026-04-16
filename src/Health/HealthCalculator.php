@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Health;
 
+use DateTimeImmutable;
 use YoanBernabeu\PeriscopeBundle\Model\MessageStatus;
 use YoanBernabeu\PeriscopeBundle\Storage\MessageFilter;
 use YoanBernabeu\PeriscopeBundle\Storage\StorageInterface;
@@ -20,7 +21,7 @@ final readonly class HealthCalculator
     {
     }
 
-    public function calculate(\DateTimeImmutable $since): HealthReport
+    public function calculate(DateTimeImmutable $since): HealthReport
     {
         // Pull every message in the window. A single page of 10_000 is
         // plenty for the scale v1 targets (10k-100k/day).
@@ -40,7 +41,7 @@ final readonly class HealthCalculator
             ++$counts[$message->status->value];
         }
 
-        $total = \array_sum($counts);
+        $total = array_sum($counts);
         $terminal = $counts[MessageStatus::Succeeded->value] + $counts[MessageStatus::Failed->value];
         $failureRate = 0 === $terminal ? 0.0 : $counts[MessageStatus::Failed->value] / $terminal;
 

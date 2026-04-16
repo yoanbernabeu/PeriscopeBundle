@@ -6,6 +6,7 @@ namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Command;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\DependencyInjection\ServiceLocator;
@@ -30,7 +31,7 @@ final class ListSchedulesCommandTest extends TestCase
     {
         $tester = $this->buildTester([
             'default' => $this->provider([
-                RecurringMessage::every('30 seconds', new \stdClass()),
+                RecurringMessage::every('30 seconds', new stdClass()),
             ]),
         ]);
 
@@ -44,8 +45,8 @@ final class ListSchedulesCommandTest extends TestCase
     public function testScheduleFilterNarrowsOutput(): void
     {
         $tester = $this->buildTester([
-            'cron' => $this->provider([RecurringMessage::every('1 minute', new \stdClass())]),
-            'default' => $this->provider([RecurringMessage::every('10 seconds', new \stdClass())]),
+            'cron' => $this->provider([RecurringMessage::every('1 minute', new stdClass())]),
+            'default' => $this->provider([RecurringMessage::every('10 seconds', new stdClass())]),
         ]);
 
         self::assertSame(Command::SUCCESS, $tester->execute(['--schedule' => 'cron']));
@@ -58,7 +59,7 @@ final class ListSchedulesCommandTest extends TestCase
     public function testUnknownScheduleExitsWithNoResult(): void
     {
         $tester = $this->buildTester([
-            'default' => $this->provider([RecurringMessage::every('10 seconds', new \stdClass())]),
+            'default' => $this->provider([RecurringMessage::every('10 seconds', new stdClass())]),
         ]);
 
         self::assertSame(1, $tester->execute(['--schedule' => 'missing']));

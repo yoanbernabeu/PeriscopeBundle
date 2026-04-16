@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Storage;
 
+use DateTimeImmutable;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use YoanBernabeu\PeriscopeBundle\Model\MessageStatus;
@@ -28,8 +30,8 @@ final class MessageFilterTest extends TestCase
 
     public function testAcceptsExplicitValues(): void
     {
-        $since = new \DateTimeImmutable('2026-04-01');
-        $until = new \DateTimeImmutable('2026-04-30');
+        $since = new DateTimeImmutable('2026-04-01');
+        $until = new DateTimeImmutable('2026-04-30');
 
         $filter = new MessageFilter(
             statuses: [MessageStatus::Failed],
@@ -54,7 +56,7 @@ final class MessageFilterTest extends TestCase
 
     public function testRejectsLimitBelowOne(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('limit must be >= 1');
 
         new MessageFilter(limit: 0);
@@ -62,7 +64,7 @@ final class MessageFilterTest extends TestCase
 
     public function testRejectsNegativeOffset(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('offset must be >= 0');
 
         new MessageFilter(offset: -1);
@@ -70,18 +72,18 @@ final class MessageFilterTest extends TestCase
 
     public function testRejectsInvertedTimeWindow(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('since must be less than or equal to until');
 
         new MessageFilter(
-            since: new \DateTimeImmutable('2026-04-30'),
-            until: new \DateTimeImmutable('2026-04-01'),
+            since: new DateTimeImmutable('2026-04-30'),
+            until: new DateTimeImmutable('2026-04-01'),
         );
     }
 
     public function testEqualSinceAndUntilIsAccepted(): void
     {
-        $moment = new \DateTimeImmutable('2026-04-16 12:00:00');
+        $moment = new DateTimeImmutable('2026-04-16 12:00:00');
 
         $filter = new MessageFilter(since: $moment, until: $moment);
 

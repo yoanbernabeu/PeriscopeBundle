@@ -48,13 +48,13 @@ final class RendererTest extends TestCase
             $output,
         );
 
-        $lines = \array_values(\array_filter(
-            \explode("\n", $output->fetch()),
+        $lines = array_values(array_filter(
+            explode("\n", $output->fetch()),
             static fn ($line) => '' !== $line,
         ));
         self::assertCount(2, $lines);
         foreach ($lines as $line) {
-            $decoded = \json_decode($line, true);
+            $decoded = json_decode($line, true);
             self::assertIsArray($decoded);
             self::assertArrayHasKey('id', $decoded);
         }
@@ -71,7 +71,7 @@ final class RendererTest extends TestCase
             $output,
         );
 
-        $decoded = \json_decode(\trim($output->fetch()), true);
+        $decoded = json_decode(trim($output->fetch()), true);
 
         self::assertIsArray($decoded);
         self::assertCount(1, $decoded);

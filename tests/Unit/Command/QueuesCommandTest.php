@@ -52,8 +52,8 @@ final class QueuesCommandTest extends TestCase
 
         self::assertSame(Command::SUCCESS, $tester->execute(['--format' => 'ndjson']));
 
-        $line = \trim($tester->getDisplay());
-        $decoded = \json_decode($line, true);
+        $line = trim($tester->getDisplay());
+        $decoded = json_decode($line, true);
         self::assertIsArray($decoded);
         self::assertNull($decoded['count']);
     }
@@ -122,7 +122,7 @@ final class QueuesCommandTest extends TestCase
 
     private function opaqueTransport(): TransportInterface
     {
-        return new class() implements TransportInterface {
+        return new class implements TransportInterface {
             public function get(): iterable
             {
                 return [];

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Transport;
 
+use DateTimeImmutable;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\Messenger\Transport\TransportInterface;
@@ -16,7 +17,7 @@ use YoanBernabeu\PeriscopeBundle\Internal\TransportFilter;
 final readonly class QueueDepthProbe
 {
     /**
-     * @param ServiceLocator<mixed>                 $transports
+     * @param ServiceLocator<mixed> $transports
      * @param iterable<TransportInspectorInterface> $inspectors
      */
     public function __construct(
@@ -34,7 +35,7 @@ final readonly class QueueDepthProbe
     {
         $snapshots = [];
 
-        foreach (\array_keys($this->transports->getProvidedServices()) as $name) {
+        foreach (array_keys($this->transports->getProvidedServices()) as $name) {
             if (!\is_string($name) || !$this->filter->accepts($name)) {
                 continue;
             }
@@ -59,7 +60,7 @@ final readonly class QueueDepthProbe
                 count: $count,
                 supported: $supported,
                 adapter: $this->describeTransport($transport),
-                takenAt: new \DateTimeImmutable(),
+                takenAt: new DateTimeImmutable(),
             );
         }
 
@@ -69,8 +70,8 @@ final readonly class QueueDepthProbe
     private function describeTransport(TransportInterface $transport): string
     {
         $class = $transport::class;
-        $pos = \strrpos($class, '\\');
+        $pos = strrpos($class, '\\');
 
-        return false === $pos ? $class : \substr($class, $pos + 1);
+        return false === $pos ? $class : substr($class, $pos + 1);
     }
 }

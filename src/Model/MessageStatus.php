@@ -20,7 +20,7 @@ enum MessageStatus: string
      */
     public static function fromEventTypes(array $eventTypes): self
     {
-        $last = \end($eventTypes);
+        $last = end($eventTypes);
 
         if (false === $last) {
             return self::Pending;

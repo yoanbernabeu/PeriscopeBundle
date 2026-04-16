@@ -122,7 +122,7 @@ final class PeriscopeBundle extends AbstractBundle
             if (!\is_array($buses)) {
                 continue;
             }
-            foreach (\array_keys($buses) as $name) {
+            foreach (array_keys($buses) as $name) {
                 if (\is_string($name)) {
                     $busNames[$name] = true;
                 }
@@ -134,7 +134,7 @@ final class PeriscopeBundle extends AbstractBundle
         }
 
         $buses = [];
-        foreach (\array_keys($busNames) as $name) {
+        foreach (array_keys($busNames) as $name) {
             $buses[$name] = [
                 'middleware' => [
                     ['id' => Middleware\AddPeriscopeIdStampMiddleware::class],

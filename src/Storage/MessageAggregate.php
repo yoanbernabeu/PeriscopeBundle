@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Storage;
 
+use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
 use YoanBernabeu\PeriscopeBundle\Model\MessageStatus;
 
@@ -15,8 +16,8 @@ use YoanBernabeu\PeriscopeBundle\Model\MessageStatus;
 final readonly class MessageAggregate
 {
     /**
-     * @param list<string> $transports  distinct transports the message was seen on
-     * @param list<string> $handlers    distinct handlers that processed the message
+     * @param list<string> $transports distinct transports the message was seen on
+     * @param list<string> $handlers distinct handlers that processed the message
      */
     public function __construct(
         public Uuid $periscopeId,
@@ -29,8 +30,8 @@ final readonly class MessageAggregate
         public ?int $durationMs,
         public ?string $lastErrorClass,
         public ?string $lastErrorMessage,
-        public \DateTimeImmutable $firstSeenAt,
-        public \DateTimeImmutable $lastSeenAt,
+        public DateTimeImmutable $firstSeenAt,
+        public DateTimeImmutable $lastSeenAt,
     ) {
     }
 }

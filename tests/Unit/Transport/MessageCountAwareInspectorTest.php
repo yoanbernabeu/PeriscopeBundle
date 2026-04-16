@@ -6,6 +6,7 @@ namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Transport;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
@@ -35,7 +36,7 @@ final class MessageCountAwareInspectorTest extends TestCase
 
     public function testReturnsNullOnFailure(): void
     {
-        $transport = new class() implements TransportInterface, MessageCountAwareInterface {
+        $transport = new class implements TransportInterface, MessageCountAwareInterface {
             public function get(): iterable
             {
                 return [];
@@ -56,7 +57,7 @@ final class MessageCountAwareInspectorTest extends TestCase
 
             public function getMessageCount(): int
             {
-                throw new \RuntimeException('transport unavailable');
+                throw new RuntimeException('transport unavailable');
             }
         };
 
@@ -102,7 +103,7 @@ final class MessageCountAwareInspectorTest extends TestCase
 
     private function opaqueTransport(): TransportInterface
     {
-        return new class() implements TransportInterface {
+        return new class implements TransportInterface {
             public function get(): iterable
             {
                 return [];

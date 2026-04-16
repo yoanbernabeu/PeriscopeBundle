@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Health;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use YoanBernabeu\PeriscopeBundle\Health\HealthReport;
@@ -21,7 +23,7 @@ final class HealthReportTest extends TestCase
 
     public function testToColumnsExposesEveryField(): void
     {
-        $since = new \DateTimeImmutable('2026-04-16 11:45:00', new \DateTimeZone('UTC'));
+        $since = new DateTimeImmutable('2026-04-16 11:45:00', new DateTimeZone('UTC'));
 
         $report = new HealthReport(
             total: 100,

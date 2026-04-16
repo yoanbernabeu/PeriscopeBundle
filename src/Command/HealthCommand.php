@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Command;
 
+use DateTimeImmutable;
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -40,7 +42,7 @@ final class HealthCommand extends Command
 
     protected function configure(): void
     {
-        $formats = \implode('|', \array_column(OutputFormat::cases(), 'value'));
+        $formats = implode('|', array_column(OutputFormat::cases(), 'value'));
         $this
             ->addOption('since', null, InputOption::VALUE_REQUIRED, 'Time window to aggregate, e.g. "1h", "30m", "2d" or an ISO-8601 timestamp.', '15m')
             ->addOption('format', 'f', InputOption::VALUE_REQUIRED, \sprintf('Output format: %s.', $formats), OutputFormat::Auto->value)
@@ -53,12 +55,12 @@ final class HealthCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $since = CommonOptions::resolveSince($input) ?? (new \DateTimeImmutable('now'))->modify('-15 minutes');
+            $since = CommonOptions::resolveSince($input) ?? (new DateTimeImmutable('now'))->modify('-15 minutes');
             $format = CommonOptions::resolveFormat($input);
             $columns = CommonOptions::resolveFields($input, HealthReport::defaultColumns()) ?? HealthReport::defaultColumns();
             $thresholdFailureRate = $this->resolveFloat($input->getOption('threshold-failure-rate'), 'threshold-failure-rate');
             $thresholdMinTotal = $this->resolveInt($input->getOption('threshold-min-total'), 'threshold-min-total');
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             $output->writeln(\sprintf('<error>%s</error>', $exception->getMessage()));
 
             return Command::INVALID;
@@ -85,16 +87,16 @@ final class HealthCommand extends Command
             return null;
         }
 
-        if (\is_string($value) && \is_numeric($value)) {
+        if (\is_string($value) && is_numeric($value)) {
             $parsed = (float) $value;
             if ($parsed < 0 || $parsed > 1) {
-                throw new \InvalidArgumentException(\sprintf('--%s must be between 0 and 1.', $name));
+                throw new InvalidArgumentException(\sprintf('--%s must be between 0 and 1.', $name));
             }
 
             return $parsed;
         }
 
-        throw new \InvalidArgumentException(\sprintf('Invalid --%s value: expected a number between 0 and 1.', $name));
+        throw new InvalidArgumentException(\sprintf('Invalid --%s value: expected a number between 0 and 1.', $name));
     }
 
     private function resolveInt(mixed $value, string $name): ?int
@@ -103,10 +105,10 @@ final class HealthCommand extends Command
             return null;
         }
 
-        if (\is_string($value) && \is_numeric($value)) {
+        if (\is_string($value) && is_numeric($value)) {
             return (int) $value;
         }
 
-        throw new \InvalidArgumentException(\sprintf('Invalid --%s value: expected an integer.', $name));
+        throw new InvalidArgumentException(\sprintf('Invalid --%s value: expected an integer.', $name));
     }
 }

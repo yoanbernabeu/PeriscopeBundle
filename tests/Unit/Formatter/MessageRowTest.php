@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Formatter;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Component\Uid\Uuid;
 use YoanBernabeu\PeriscopeBundle\Formatter\MessageRow;
 use YoanBernabeu\PeriscopeBundle\Model\MessageStatus;
@@ -25,8 +28,8 @@ final class MessageRowTest extends TestCase
     public function testFromAggregateProjectsScalarFields(): void
     {
         $uuid = Uuid::v7();
-        $firstSeen = new \DateTimeImmutable('2026-04-16 12:00:00', new \DateTimeZone('UTC'));
-        $lastSeen = new \DateTimeImmutable('2026-04-16 12:00:05', new \DateTimeZone('UTC'));
+        $firstSeen = new DateTimeImmutable('2026-04-16 12:00:00', new DateTimeZone('UTC'));
+        $lastSeen = new DateTimeImmutable('2026-04-16 12:00:05', new DateTimeZone('UTC'));
 
         $row = MessageRow::fromAggregate(new MessageAggregate(
             periscopeId: $uuid,
@@ -37,7 +40,7 @@ final class MessageRowTest extends TestCase
             handlers: ['App\\MessageHandler\\SendEmailHandler'],
             scheduled: true,
             durationMs: 320,
-            lastErrorClass: \RuntimeException::class,
+            lastErrorClass: RuntimeException::class,
             lastErrorMessage: 'timeout',
             firstSeenAt: $firstSeen,
             lastSeenAt: $lastSeen,
@@ -68,8 +71,8 @@ final class MessageRowTest extends TestCase
             durationMs: null,
             lastErrorClass: null,
             lastErrorMessage: null,
-            firstSeenAt: new \DateTimeImmutable(),
-            lastSeenAt: new \DateTimeImmutable(),
+            firstSeenAt: new DateTimeImmutable(),
+            lastSeenAt: new DateTimeImmutable(),
         ));
 
         self::assertNull($row->fields['transport']);

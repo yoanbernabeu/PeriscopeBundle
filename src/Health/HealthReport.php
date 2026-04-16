@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Health;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use YoanBernabeu\PeriscopeBundle\Formatter\RowInterface;
 
 /**
@@ -20,7 +22,7 @@ final readonly class HealthReport implements RowInterface
         public int $running,
         public int $pending,
         public float $failureRate,
-        public \DateTimeImmutable $since,
+        public DateTimeImmutable $since,
     ) {
     }
 
@@ -35,13 +37,13 @@ final readonly class HealthReport implements RowInterface
     public function toColumns(): array
     {
         return [
-            'since' => $this->since->format(\DateTimeInterface::ATOM),
+            'since' => $this->since->format(DateTimeInterface::ATOM),
             'total' => $this->total,
             'succeeded' => $this->succeeded,
             'failed' => $this->failed,
             'running' => $this->running,
             'pending' => $this->pending,
-            'failure_rate' => \round($this->failureRate, 4),
+            'failure_rate' => round($this->failureRate, 4),
         ];
     }
 }

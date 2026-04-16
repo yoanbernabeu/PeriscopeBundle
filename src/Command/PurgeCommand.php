@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Command;
 
+use DateTimeImmutable;
+use DateTimeInterface;
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -43,14 +46,14 @@ final class PurgeCommand extends Command
     {
         try {
             $cutoff = $this->resolveCutoff($input);
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             $output->writeln(\sprintf('<error>%s</error>', $exception->getMessage()));
 
             return Command::INVALID;
         }
 
         if ((bool) $input->getOption('dry-run')) {
-            $output->writeln(\sprintf('Would delete events older than %s.', $cutoff->format(\DateTimeInterface::ATOM)));
+            $output->writeln(\sprintf('Would delete events older than %s.', $cutoff->format(DateTimeInterface::ATOM)));
 
             return Command::SUCCESS;
         }
@@ -60,38 +63,38 @@ final class PurgeCommand extends Command
             'Deleted %d event%s older than %s.',
             $deleted,
             1 === $deleted ? '' : 's',
-            $cutoff->format(\DateTimeInterface::ATOM),
+            $cutoff->format(DateTimeInterface::ATOM),
         ));
 
         return Command::SUCCESS;
     }
 
-    private function resolveCutoff(InputInterface $input): \DateTimeImmutable
+    private function resolveCutoff(InputInterface $input): DateTimeImmutable
     {
         $override = $input->getOption('older-than');
         if (\is_string($override) && '' !== $override) {
             return $this->parseDuration($override);
         }
 
-        return (new \DateTimeImmutable('now'))->modify(\sprintf('-%d days', $this->retentionDays));
+        return (new DateTimeImmutable('now'))->modify(\sprintf('-%d days', $this->retentionDays));
     }
 
-    private function parseDuration(string $value): \DateTimeImmutable
+    private function parseDuration(string $value): DateTimeImmutable
     {
-        if (\preg_match('/^(\d+)\s*([smhd])$/i', $value, $matches) !== 1) {
-            throw new \InvalidArgumentException(\sprintf('Invalid --older-than value "%s". Expected a duration like "7d" or "12h".', $value));
+        if (preg_match('/^(\d+)\s*([smhd])$/i', $value, $matches) !== 1) {
+            throw new InvalidArgumentException(\sprintf('Invalid --older-than value "%s". Expected a duration like "7d" or "12h".', $value));
         }
 
         $amount = (int) $matches[1];
-        $unit = \strtolower($matches[2]);
+        $unit = strtolower($matches[2]);
         $modifier = match ($unit) {
             's' => \sprintf('-%d seconds', $amount),
             'm' => \sprintf('-%d minutes', $amount),
             'h' => \sprintf('-%d hours', $amount),
             'd' => \sprintf('-%d days', $amount),
-            default => throw new \InvalidArgumentException(\sprintf('Unsupported duration unit "%s".', $unit)),
+            default => throw new InvalidArgumentException(\sprintf('Unsupported duration unit "%s".', $unit)),
         };
 
-        return (new \DateTimeImmutable('now'))->modify($modifier);
+        return (new DateTimeImmutable('now'))->modify($modifier);
     }
 }

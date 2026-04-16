@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Formatter;
 
+use DateTimeInterface;
 use YoanBernabeu\PeriscopeBundle\Model\RecordedEvent;
 
 /**
@@ -21,7 +22,7 @@ final readonly class EventRow implements RowInterface
     public static function fromEvent(RecordedEvent $event): self
     {
         return new self([
-            'at' => $event->createdAt->format(\DateTimeInterface::ATOM),
+            'at' => $event->createdAt->format(DateTimeInterface::ATOM),
             'event' => $event->eventType->value,
             'transport' => $event->transport,
             'handler' => null === $event->handler ? null : self::shorten($event->handler),
@@ -45,8 +46,8 @@ final readonly class EventRow implements RowInterface
 
     private static function shorten(string $fqcn): string
     {
-        $pos = \strrpos($fqcn, '\\');
+        $pos = strrpos($fqcn, '\\');
 
-        return false === $pos ? $fqcn : \substr($fqcn, $pos + 1);
+        return false === $pos ? $fqcn : substr($fqcn, $pos + 1);
     }
 }

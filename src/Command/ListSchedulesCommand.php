@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Command;
 
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -42,7 +43,7 @@ final class ListSchedulesCommand extends Command
         // Schedules are static configuration, so the time-window options do not
         // apply; we register only format/fields/limit from CommonOptions via
         // direct InputOption declarations.
-        $formats = \implode('|', \array_column(OutputFormat::cases(), 'value'));
+        $formats = implode('|', array_column(OutputFormat::cases(), 'value'));
         $this
             ->addOption('format', 'f', InputOption::VALUE_REQUIRED, \sprintf('Output format: %s.', $formats), OutputFormat::Auto->value)
             ->addOption('fields', null, InputOption::VALUE_REQUIRED, 'Comma-separated list of columns to emit.')
@@ -55,7 +56,7 @@ final class ListSchedulesCommand extends Command
         try {
             $format = CommonOptions::resolveFormat($input);
             $columns = CommonOptions::resolveFields($input, ScheduleDescriptor::defaultColumns()) ?? ScheduleDescriptor::defaultColumns();
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             $output->writeln(\sprintf('<error>%s</error>', $exception->getMessage()));
 
             return Command::INVALID;
@@ -65,7 +66,7 @@ final class ListSchedulesCommand extends Command
 
         $scheduleName = $input->getOption('schedule');
         if (\is_string($scheduleName) && '' !== $scheduleName) {
-            $descriptors = \array_values(\array_filter(
+            $descriptors = array_values(array_filter(
                 $descriptors,
                 static fn (ScheduleDescriptor $descriptor): bool => $descriptor->scheduleName === $scheduleName,
             ));

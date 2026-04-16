@@ -4,9 +4,18 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Storage\Doctrine;
 
+use DateTimeImmutable;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
+
+use const JSON_INVALID_UTF8_SUBSTITUTE;
+use const JSON_PARTIAL_OUTPUT_ON_ERROR;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
+
+use LogicException;
+use RuntimeException;
 use Symfony\Component\Uid\Uuid;
 use YoanBernabeu\PeriscopeBundle\Model\EventType;
 use YoanBernabeu\PeriscopeBundle\Model\MessageStatus;
@@ -100,7 +109,7 @@ final readonly class DoctrineStorage implements StorageInterface
             $aggregates[] = $this->aggregate($events);
         }
 
-        \usort($aggregates, static fn (MessageAggregate $a, MessageAggregate $b) => $b->lastSeenAt <=> $a->lastSeenAt);
+        usort($aggregates, static fn (MessageAggregate $a, MessageAggregate $b) => $b->lastSeenAt <=> $a->lastSeenAt);
 
         return $aggregates;
     }
@@ -117,7 +126,7 @@ final readonly class DoctrineStorage implements StorageInterface
         /** @var list<array<string, mixed>> $rows */
         $rows = $query->executeQuery()->fetchAllAssociative();
 
-        return \array_values(\array_map(fn (array $row): RecordedEvent => $this->hydrate($row), $rows));
+        return array_values(array_map(fn (array $row): RecordedEvent => $this->hydrate($row), $rows));
     }
 
     public function countMessages(MessageFilter $filter): int
@@ -130,7 +139,7 @@ final readonly class DoctrineStorage implements StorageInterface
         return self::toInt($count);
     }
 
-    public function purgeOlderThan(\DateTimeImmutable $cutoff): int
+    public function purgeOlderThan(DateTimeImmutable $cutoff): int
     {
         return (int) $this->connection->executeStatement(
             \sprintf('DELETE FROM %s WHERE created_at < :cutoff', $this->schemaProvider->tableName()),
@@ -154,7 +163,7 @@ final readonly class DoctrineStorage implements StorageInterface
         /** @var list<array<string, mixed>> $rows */
         $rows = $qb->executeQuery()->fetchAllAssociative();
 
-        return \array_values(\array_map(static fn (array $row): string => self::toString($row['periscope_id'] ?? null), $rows));
+        return array_values(array_map(static fn (array $row): string => self::toString($row['periscope_id'] ?? null), $rows));
     }
 
     private function buildBaseMessageQuery(MessageFilter $filter): QueryBuilder
@@ -198,14 +207,14 @@ final readonly class DoctrineStorage implements StorageInterface
     private function aggregate(array $events): MessageAggregate
     {
         if ([] === $events) {
-            throw new \LogicException('Cannot aggregate an empty event list.');
+            throw new LogicException('Cannot aggregate an empty event list.');
         }
 
         $first = $events[0];
         $last = $events[\count($events) - 1];
 
-        /** @var list<\YoanBernabeu\PeriscopeBundle\Model\EventType> $eventTypes */
-        $eventTypes = \array_values(\array_map(static fn (RecordedEvent $event) => $event->eventType, $events));
+        /** @var list<EventType> $eventTypes */
+        $eventTypes = array_values(array_map(static fn (RecordedEvent $event) => $event->eventType, $events));
 
         $status = MessageStatus::fromEventTypes($eventTypes);
 
@@ -276,7 +285,7 @@ final readonly class DoctrineStorage implements StorageInterface
             durationMs: self::toNullableInt($row['duration_ms'] ?? null),
             scheduled: self::toBool($row['scheduled'] ?? false),
             metadata: $this->decodeJson($row['metadata'] ?? null),
-            createdAt: new \DateTimeImmutable(self::toString($row['created_at'] ?? null)),
+            createdAt: new DateTimeImmutable(self::toString($row['created_at'] ?? null)),
         );
     }
 
@@ -289,7 +298,7 @@ final readonly class DoctrineStorage implements StorageInterface
             return (string) $value;
         }
 
-        throw new \RuntimeException(\sprintf('Expected string, got %s.', \get_debug_type($value)));
+        throw new RuntimeException(\sprintf('Expected string, got %s.', get_debug_type($value)));
     }
 
     private static function toNullableString(mixed $value): ?string
@@ -302,11 +311,11 @@ final readonly class DoctrineStorage implements StorageInterface
         if (\is_int($value)) {
             return $value;
         }
-        if (\is_string($value) && \is_numeric($value)) {
+        if (\is_string($value) && is_numeric($value)) {
             return (int) $value;
         }
 
-        throw new \RuntimeException(\sprintf('Expected int, got %s.', \get_debug_type($value)));
+        throw new RuntimeException(\sprintf('Expected int, got %s.', get_debug_type($value)));
     }
 
     private static function toNullableInt(mixed $value): ?int
@@ -323,7 +332,7 @@ final readonly class DoctrineStorage implements StorageInterface
             return 0 !== $value;
         }
         if (\is_string($value)) {
-            return !\in_array(\strtolower($value), ['', '0', 'false', 'f'], true);
+            return !\in_array(strtolower($value), ['', '0', 'false', 'f'], true);
         }
 
         return false;
@@ -338,9 +347,9 @@ final readonly class DoctrineStorage implements StorageInterface
             return null;
         }
 
-        $encoded = \json_encode(
+        $encoded = json_encode(
             $data,
-            \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | \JSON_INVALID_UTF8_SUBSTITUTE | \JSON_PARTIAL_OUTPUT_ON_ERROR,
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE | JSON_PARTIAL_OUTPUT_ON_ERROR,
         );
 
         return false === $encoded ? null : $encoded;
@@ -364,7 +373,7 @@ final readonly class DoctrineStorage implements StorageInterface
             return null;
         }
 
-        $decoded = \json_decode($raw, true);
+        $decoded = json_decode($raw, true);
         if (!\is_array($decoded)) {
             return null;
         }

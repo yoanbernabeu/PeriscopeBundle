@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Formatter;
 
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
+
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,7 +29,7 @@ final readonly class Renderer
 {
     /**
      * @param list<RowInterface> $rows
-     * @param list<string>       $columns names of the columns to emit in order
+     * @param list<string> $columns names of the columns to emit in order
      */
     public function render(
         array $rows,
@@ -34,7 +38,7 @@ final readonly class Renderer
         OutputInterface $output,
     ): void {
         $format = $this->resolveAutoFormat($format, $output);
-        $projected = \array_map(static fn (RowInterface $row): array => $row->toColumns(), $rows);
+        $projected = array_map(static fn (RowInterface $row): array => $row->toColumns(), $rows);
 
         match ($format) {
             OutputFormat::Compact, OutputFormat::Auto => $this->writeCompact($projected, $columns, $output),
@@ -56,7 +60,7 @@ final readonly class Renderer
 
     /**
      * @param list<array<string, scalar|null>> $rows
-     * @param list<string>                     $columns
+     * @param list<string> $columns
      */
     private function writeCompact(array $rows, array $columns, OutputInterface $output): void
     {
@@ -66,22 +70,22 @@ final readonly class Renderer
 
         $widths = $this->columnWidths($rows, $columns);
 
-        $output->writeln($this->joinCells(\array_map(\strtoupper(...), $columns), $columns, $widths));
+        $output->writeln($this->joinCells(array_map(\strtoupper(...), $columns), $columns, $widths));
 
         foreach ($rows as $row) {
-            $cells = \array_map(fn (string $column): string => $this->stringify($row[$column] ?? null), $columns);
+            $cells = array_map(fn (string $column): string => $this->stringify($row[$column] ?? null), $columns);
             $output->writeln($this->joinCells($cells, $columns, $widths));
         }
     }
 
     /**
      * @param list<array<string, scalar|null>> $rows
-     * @param list<string>                     $columns
+     * @param list<string> $columns
      */
     private function writePretty(array $rows, array $columns, OutputInterface $output): void
     {
         $table = new Table($output);
-        $table->setHeaders(\array_map(\strtoupper(...), $columns));
+        $table->setHeaders(array_map(\strtoupper(...), $columns));
 
         $style = new TableStyle();
         $style->setHorizontalBorderChars('─');
@@ -90,7 +94,7 @@ final readonly class Renderer
         $table->setStyle($style);
 
         foreach ($rows as $row) {
-            $table->addRow(\array_map(fn (string $column): string => $this->stringify($row[$column] ?? null), $columns));
+            $table->addRow(array_map(fn (string $column): string => $this->stringify($row[$column] ?? null), $columns));
         }
 
         $table->render();
@@ -98,46 +102,46 @@ final readonly class Renderer
 
     /**
      * @param list<array<string, scalar|null>> $rows
-     * @param list<string>                     $columns
+     * @param list<string> $columns
      */
     private function writeJson(array $rows, array $columns, OutputInterface $output): void
     {
-        $payload = \array_map(fn (array $row): array => $this->project($row, $columns), $rows);
+        $payload = array_map(fn (array $row): array => $this->project($row, $columns), $rows);
 
-        $output->writeln((string) \json_encode(
+        $output->writeln((string) json_encode(
             $payload,
-            \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES,
         ));
     }
 
     /**
      * @param list<array<string, scalar|null>> $rows
-     * @param list<string>                     $columns
+     * @param list<string> $columns
      */
     private function writeNdjson(array $rows, array $columns, OutputInterface $output): void
     {
         foreach ($rows as $row) {
-            $output->writeln((string) \json_encode(
+            $output->writeln((string) json_encode(
                 $this->project($row, $columns),
-                \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES,
             ));
         }
     }
 
     /**
      * @param list<array<string, scalar|null>> $rows
-     * @param list<string>                     $columns
+     * @param list<string> $columns
      */
     private function writeYaml(array $rows, array $columns, OutputInterface $output): void
     {
-        $payload = \array_map(fn (array $row): array => $this->project($row, $columns), $rows);
+        $payload = array_map(fn (array $row): array => $this->project($row, $columns), $rows);
 
         $output->write(Yaml::dump($payload, 4, 2, Yaml::DUMP_NULL_AS_TILDE | Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK));
     }
 
     /**
      * @param array<string, scalar|null> $row
-     * @param list<string>               $columns
+     * @param list<string> $columns
      *
      * @return array<string, scalar|null>
      */
@@ -153,7 +157,7 @@ final readonly class Renderer
 
     /**
      * @param list<array<string, scalar|null>> $rows
-     * @param list<string>                     $columns
+     * @param list<string> $columns
      *
      * @return array<string, int>
      */
@@ -166,7 +170,7 @@ final readonly class Renderer
 
         foreach ($rows as $row) {
             foreach ($columns as $column) {
-                $widths[$column] = \max($widths[$column], \strlen($this->stringify($row[$column] ?? null)));
+                $widths[$column] = max($widths[$column], \strlen($this->stringify($row[$column] ?? null)));
             }
         }
 
@@ -174,8 +178,8 @@ final readonly class Renderer
     }
 
     /**
-     * @param list<string>       $cells
-     * @param list<string>       $columns
+     * @param list<string> $cells
+     * @param list<string> $columns
      * @param array<string, int> $widths
      */
     private function joinCells(array $cells, array $columns, array $widths): string
@@ -183,10 +187,10 @@ final readonly class Renderer
         $padded = [];
         foreach ($cells as $index => $value) {
             $column = $columns[$index] ?? null;
-            $padded[] = null === $column ? $value : \str_pad($value, $widths[$column]);
+            $padded[] = null === $column ? $value : str_pad($value, $widths[$column]);
         }
 
-        return \rtrim(\implode('  ', $padded));
+        return rtrim(implode('  ', $padded));
     }
 
     private function stringify(mixed $value): string

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\EventListener;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Scheduler\Event\FailureEvent;
 use Symfony\Component\Scheduler\Event\PostRunEvent;
@@ -31,7 +33,7 @@ final class SchedulerEventSubscriber implements EventSubscriberInterface
 
     public function __construct(
         private readonly StorageInterface $storage,
-        private readonly \DateTimeZone $timezone = new \DateTimeZone('UTC'),
+        private readonly DateTimeZone $timezone = new DateTimeZone('UTC'),
     ) {
     }
 
@@ -48,12 +50,12 @@ final class SchedulerEventSubscriber implements EventSubscriberInterface
     {
         $context = $event->getMessageContext();
         $id = $this->deriveIdFromContext($context->id);
-        $this->startTimes[$id->toRfc4122()] = \microtime(true);
+        $this->startTimes[$id->toRfc4122()] = microtime(true);
 
         $this->storage->record($this->makeEvent(
             id: $id,
             type: EventType::ScheduledBefore,
-            messageClass: \get_debug_type($event->getMessage()),
+            messageClass: get_debug_type($event->getMessage()),
             scheduleName: $this->scheduleName($event->getSchedule()),
             triggerLabel: $this->triggerLabel($context->trigger),
         ));
@@ -67,7 +69,7 @@ final class SchedulerEventSubscriber implements EventSubscriberInterface
         $this->storage->record($this->makeEvent(
             id: $id,
             type: EventType::ScheduledAfter,
-            messageClass: \get_debug_type($event->getMessage()),
+            messageClass: get_debug_type($event->getMessage()),
             scheduleName: $this->scheduleName($event->getSchedule()),
             triggerLabel: $this->triggerLabel($context->trigger),
             durationMs: $this->consumeDuration($id),
@@ -83,7 +85,7 @@ final class SchedulerEventSubscriber implements EventSubscriberInterface
         $this->storage->record($this->makeEvent(
             id: $id,
             type: EventType::ScheduledFailed,
-            messageClass: \get_debug_type($event->getMessage()),
+            messageClass: get_debug_type($event->getMessage()),
             scheduleName: $this->scheduleName($event->getSchedule()),
             triggerLabel: $this->triggerLabel($context->trigger),
             durationMs: $this->consumeDuration($id),
@@ -116,8 +118,7 @@ final class SchedulerEventSubscriber implements EventSubscriberInterface
         // name. We do not hard-depend on Symfony's internal Runner class to
         // avoid coupling to a non-stable class; pull the name via reflection
         // when available, otherwise fall back to the class basename.
-        if (\method_exists($runnerSchedule, 'getName')) {
-            /** @var mixed $name */
+        if (method_exists($runnerSchedule, 'getName')) {
             $name = $runnerSchedule->getName();
             if (\is_string($name) && '' !== $name) {
                 return $name;
@@ -125,14 +126,14 @@ final class SchedulerEventSubscriber implements EventSubscriberInterface
         }
 
         $class = $runnerSchedule::class;
-        $pos = \strrpos($class, '\\');
+        $pos = strrpos($class, '\\');
 
-        return false === $pos ? $class : \substr($class, $pos + 1);
+        return false === $pos ? $class : substr($class, $pos + 1);
     }
 
     private function triggerLabel(object $trigger): string
     {
-        if (\method_exists($trigger, '__toString')) {
+        if (method_exists($trigger, '__toString')) {
             return (string) $trigger;
         }
 
@@ -169,7 +170,7 @@ final class SchedulerEventSubscriber implements EventSubscriberInterface
                 'schedule' => $scheduleName,
                 'trigger' => $triggerLabel,
             ],
-            createdAt: new \DateTimeImmutable('now', $this->timezone),
+            createdAt: new DateTimeImmutable('now', $this->timezone),
         );
     }
 
@@ -180,7 +181,7 @@ final class SchedulerEventSubscriber implements EventSubscriberInterface
             return null;
         }
 
-        $duration = (int) \round((\microtime(true) - $this->startTimes[$key]) * 1000);
+        $duration = (int) round((microtime(true) - $this->startTimes[$key]) * 1000);
         unset($this->startTimes[$key]);
 
         return $duration;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Command;
 
+use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
@@ -67,7 +68,7 @@ final class HealthCommandTest extends TestCase
 
         self::assertSame(Command::SUCCESS, $this->tester->execute(['--format' => 'ndjson']));
 
-        $decoded = \json_decode(\trim($this->tester->getDisplay()), true);
+        $decoded = json_decode(trim($this->tester->getDisplay()), true);
         self::assertIsArray($decoded);
         self::assertArrayHasKey('failure_rate', $decoded);
     }
@@ -75,7 +76,7 @@ final class HealthCommandTest extends TestCase
     private function recordMessage(EventType ...$types): void
     {
         $id = Uuid::v7();
-        $clock = new \DateTimeImmutable();
+        $clock = new DateTimeImmutable();
 
         foreach ($types as $offset => $type) {
             $this->harness->storage->record(new RecordedEvent(

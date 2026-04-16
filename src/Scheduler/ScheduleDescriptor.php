@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Scheduler;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use YoanBernabeu\PeriscopeBundle\Formatter\RowInterface;
 
 /**
@@ -16,7 +18,7 @@ final readonly class ScheduleDescriptor implements RowInterface
         public string $scheduleName,
         public string $messageClass,
         public string $triggerLabel,
-        public ?\DateTimeImmutable $nextRunAt,
+        public ?DateTimeImmutable $nextRunAt,
         public string $providerClass,
         public int $position,
     ) {
@@ -36,15 +38,15 @@ final readonly class ScheduleDescriptor implements RowInterface
             'schedule' => $this->scheduleName,
             'class' => $this->shorten($this->messageClass),
             'trigger' => $this->triggerLabel,
-            'next_run' => $this->nextRunAt?->format(\DateTimeInterface::ATOM),
+            'next_run' => $this->nextRunAt?->format(DateTimeInterface::ATOM),
             'provider' => $this->shorten($this->providerClass),
         ];
     }
 
     private function shorten(string $fqcn): string
     {
-        $pos = \strrpos($fqcn, '\\');
+        $pos = strrpos($fqcn, '\\');
 
-        return false === $pos ? $fqcn : \substr($fqcn, $pos + 1);
+        return false === $pos ? $fqcn : substr($fqcn, $pos + 1);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Command;
 
+use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
@@ -63,9 +64,9 @@ final class ShowMessageCommandTest extends TestCase
             '--format' => 'ndjson',
         ]));
 
-        $lines = \array_values(\array_filter(\explode("\n", $this->tester->getDisplay()), static fn ($line) => '' !== $line));
+        $lines = array_values(array_filter(explode("\n", $this->tester->getDisplay()), static fn ($line) => '' !== $line));
         foreach ($lines as $line) {
-            $decoded = \json_decode($line, true);
+            $decoded = json_decode($line, true);
             self::assertIsArray($decoded);
             self::assertArrayHasKey('event', $decoded);
             self::assertArrayNotHasKey('handler', $decoded);
@@ -75,7 +76,7 @@ final class ShowMessageCommandTest extends TestCase
     private function recordTimeline(): Uuid
     {
         $id = Uuid::v7();
-        $clock = new \DateTimeImmutable();
+        $clock = new DateTimeImmutable();
 
         foreach ([EventType::Dispatched, EventType::Received, EventType::Handled] as $offset => $type) {
             $this->harness->storage->record(new RecordedEvent(

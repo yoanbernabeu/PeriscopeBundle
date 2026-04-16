@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\EventListener;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Event\SendMessageToTransportsEvent;
@@ -44,7 +46,7 @@ final class MessengerEventSubscriber implements EventSubscriberInterface
         private readonly StampSummarizer $stamps,
         private readonly PayloadExtractor $payload,
         private readonly TransportFilter $transports,
-        private readonly \DateTimeZone $timezone = new \DateTimeZone('UTC'),
+        private readonly DateTimeZone $timezone = new DateTimeZone('UTC'),
     ) {
     }
 
@@ -105,7 +107,7 @@ final class MessengerEventSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->startTimes[$id->toRfc4122()] = \microtime(true);
+        $this->startTimes[$id->toRfc4122()] = microtime(true);
 
         $message = $envelope->getMessage();
         $this->storage->record(new RecordedEvent(
@@ -246,7 +248,7 @@ final class MessengerEventSubscriber implements EventSubscriberInterface
     private function firstSender(SendMessageToTransportsEvent $event): ?string
     {
         // SendMessageToTransportsEvent::getSenders() returns an array keyed by alias.
-        foreach (\array_keys($event->getSenders()) as $alias) {
+        foreach (array_keys($event->getSenders()) as $alias) {
             return \is_string($alias) ? $alias : null;
         }
 
@@ -260,14 +262,14 @@ final class MessengerEventSubscriber implements EventSubscriberInterface
             return null;
         }
 
-        $duration = (int) \round((\microtime(true) - $this->startTimes[$key]) * 1000);
+        $duration = (int) round((microtime(true) - $this->startTimes[$key]) * 1000);
         unset($this->startTimes[$key]);
 
         return $duration;
     }
 
-    private function now(): \DateTimeImmutable
+    private function now(): DateTimeImmutable
     {
-        return new \DateTimeImmutable('now', $this->timezone);
+        return new DateTimeImmutable('now', $this->timezone);
     }
 }

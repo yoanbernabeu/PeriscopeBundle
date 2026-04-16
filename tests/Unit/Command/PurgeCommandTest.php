@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Command;
 
+use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
@@ -21,7 +22,7 @@ final class PurgeCommandTest extends TestCase
     public function testDryRunPreservesEverything(): void
     {
         $harness = new InMemoryStorage();
-        $this->seed($harness, new \DateTimeImmutable('2026-01-01 00:00:00'));
+        $this->seed($harness, new DateTimeImmutable('2026-01-01 00:00:00'));
 
         $tester = new CommandTester(new PurgeCommand($harness->storage, retentionDays: 30));
         self::assertSame(Command::SUCCESS, $tester->execute(['--dry-run' => true]));
@@ -33,8 +34,8 @@ final class PurgeCommandTest extends TestCase
     public function testDeletesRowsOlderThanRetention(): void
     {
         $harness = new InMemoryStorage();
-        $this->seed($harness, new \DateTimeImmutable('2020-01-01 00:00:00'));
-        $this->seed($harness, new \DateTimeImmutable()); // recent row
+        $this->seed($harness, new DateTimeImmutable('2020-01-01 00:00:00'));
+        $this->seed($harness, new DateTimeImmutable()); // recent row
 
         $tester = new CommandTester(new PurgeCommand($harness->storage, retentionDays: 30));
         self::assertSame(Command::SUCCESS, $tester->execute([]));
@@ -46,7 +47,7 @@ final class PurgeCommandTest extends TestCase
     public function testOverrideRespectsCustomDuration(): void
     {
         $harness = new InMemoryStorage();
-        $this->seed($harness, (new \DateTimeImmutable())->modify('-2 hours'));
+        $this->seed($harness, (new DateTimeImmutable())->modify('-2 hours'));
 
         $tester = new CommandTester(new PurgeCommand($harness->storage, retentionDays: 30));
         self::assertSame(Command::SUCCESS, $tester->execute(['--older-than' => '1h']));
@@ -63,7 +64,7 @@ final class PurgeCommandTest extends TestCase
         self::assertStringContainsString('Invalid --older-than value', $tester->getDisplay());
     }
 
-    private function seed(InMemoryStorage $harness, \DateTimeImmutable $createdAt): void
+    private function seed(InMemoryStorage $harness, DateTimeImmutable $createdAt): void
     {
         $harness->storage->record(new RecordedEvent(
             id: null,

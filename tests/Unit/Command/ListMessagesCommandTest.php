@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Command;
 
+use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
@@ -69,9 +70,9 @@ final class ListMessagesCommandTest extends TestCase
             '--since' => '1h',
         ]));
 
-        $lines = \array_values(\array_filter(\explode("\n", $this->tester->getDisplay()), static fn ($line) => '' !== $line));
+        $lines = array_values(array_filter(explode("\n", $this->tester->getDisplay()), static fn ($line) => '' !== $line));
         self::assertCount(1, $lines);
-        $decoded = \json_decode($lines[0], true);
+        $decoded = json_decode($lines[0], true);
         self::assertIsArray($decoded);
         self::assertArrayHasKey('status', $decoded);
     }
@@ -97,7 +98,7 @@ final class ListMessagesCommandTest extends TestCase
     private function record(EventType ...$types): Uuid
     {
         $id = Uuid::v7();
-        $clock = new \DateTimeImmutable();
+        $clock = new DateTimeImmutable();
 
         foreach ($types as $offset => $type) {
             $this->harness->storage->record(new RecordedEvent(

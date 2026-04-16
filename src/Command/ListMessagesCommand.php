@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace YoanBernabeu\PeriscopeBundle\Command;
 
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,7 +45,7 @@ final class ListMessagesCommand extends Command
         CommonOptions::configure($this);
 
         $this
-            ->addOption('status', null, InputOption::VALUE_REQUIRED, \sprintf('Filter by status: %s.', \implode(', ', \array_column(MessageStatus::cases(), 'value'))))
+            ->addOption('status', null, InputOption::VALUE_REQUIRED, \sprintf('Filter by status: %s.', implode(', ', array_column(MessageStatus::cases(), 'value'))))
             ->addOption('transport', 't', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Restrict to one or more transport names.')
             ->addOption('class', 'c', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Restrict to one or more message classes (fully qualified).')
             ->addOption('scheduled', null, InputOption::VALUE_REQUIRED, 'Limit to scheduler-triggered messages (true|false).')
@@ -66,7 +67,7 @@ final class ListMessagesCommand extends Command
             $format = CommonOptions::resolveFormat($input);
             $columns = CommonOptions::resolveFields($input, MessageRow::defaultColumns()) ?? MessageRow::defaultColumns();
             $statusFilter = $this->resolveStatus($input);
-        } catch (\InvalidArgumentException $exception) {
+        } catch (InvalidArgumentException $exception) {
             $output->writeln(\sprintf('<error>%s</error>', $exception->getMessage()));
 
             return Command::INVALID;
@@ -74,7 +75,7 @@ final class ListMessagesCommand extends Command
 
         $messages = $this->storage->findMessages($filter);
         if (null !== $statusFilter) {
-            $messages = \array_values(\array_filter(
+            $messages = array_values(array_filter(
                 $messages,
                 static fn (MessageAggregate $message): bool => $message->status === $statusFilter,
             ));
@@ -84,7 +85,7 @@ final class ListMessagesCommand extends Command
             return 1;
         }
 
-        $rows = \array_map(MessageRow::fromAggregate(...), $messages);
+        $rows = array_map(MessageRow::fromAggregate(...), $messages);
         $this->renderer->render($rows, $columns, $format, $output);
 
         return Command::SUCCESS;
@@ -97,7 +98,7 @@ final class ListMessagesCommand extends Command
             return null;
         }
 
-        $lower = \strtolower($value);
+        $lower = strtolower($value);
         if (\in_array($lower, ['1', 'true', 'yes'], true)) {
             return true;
         }
@@ -105,7 +106,7 @@ final class ListMessagesCommand extends Command
             return false;
         }
 
-        throw new \InvalidArgumentException(\sprintf('Invalid --scheduled value "%s". Expected true|false.', $value));
+        throw new InvalidArgumentException(\sprintf('Invalid --scheduled value "%s". Expected true|false.', $value));
     }
 
     private function resolveStatus(InputInterface $input): ?MessageStatus
@@ -115,13 +116,9 @@ final class ListMessagesCommand extends Command
             return null;
         }
 
-        $status = MessageStatus::tryFrom(\strtolower($raw));
+        $status = MessageStatus::tryFrom(strtolower($raw));
         if (null === $status) {
-            throw new \InvalidArgumentException(\sprintf(
-                'Invalid --status value "%s". Allowed: %s.',
-                $raw,
-                \implode(', ', \array_column(MessageStatus::cases(), 'value')),
-            ));
+            throw new InvalidArgumentException(\sprintf('Invalid --status value "%s". Allowed: %s.', $raw, implode(', ', array_column(MessageStatus::cases(), 'value'))));
         }
 
         return $status;

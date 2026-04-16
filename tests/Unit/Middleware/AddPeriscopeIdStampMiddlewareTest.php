@@ -6,6 +6,7 @@ namespace YoanBernabeu\PeriscopeBundle\Tests\Unit\Middleware;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Middleware\StackInterface;
 use Symfony\Component\Messenger\Middleware\StackMiddleware;
@@ -20,7 +21,7 @@ final class AddPeriscopeIdStampMiddlewareTest extends TestCase
     {
         $middleware = new AddPeriscopeIdStampMiddleware();
 
-        $envelope = $middleware->handle(Envelope::wrap(new \stdClass()), $this->stack());
+        $envelope = $middleware->handle(Envelope::wrap(new stdClass()), $this->stack());
 
         self::assertNotNull($envelope->last(PeriscopeIdStamp::class));
     }
@@ -30,7 +31,7 @@ final class AddPeriscopeIdStampMiddlewareTest extends TestCase
         $middleware = new AddPeriscopeIdStampMiddleware();
         $existing = PeriscopeIdStamp::generate();
 
-        $envelope = $middleware->handle(Envelope::wrap(new \stdClass(), [$existing]), $this->stack());
+        $envelope = $middleware->handle(Envelope::wrap(new stdClass(), [$existing]), $this->stack());
 
         self::assertSame($existing, $envelope->last(PeriscopeIdStamp::class));
     }
@@ -40,7 +41,7 @@ final class AddPeriscopeIdStampMiddlewareTest extends TestCase
         $middleware = new AddPeriscopeIdStampMiddleware();
 
         $envelope = $middleware->handle(
-            Envelope::wrap(new \stdClass(), [new ReceivedStamp('async')]),
+            Envelope::wrap(new stdClass(), [new ReceivedStamp('async')]),
             $this->stack(),
         );
 
@@ -53,7 +54,7 @@ final class AddPeriscopeIdStampMiddlewareTest extends TestCase
         $existing = PeriscopeIdStamp::generate();
 
         $envelope = $middleware->handle(
-            Envelope::wrap(new \stdClass(), [new ReceivedStamp('async'), $existing]),
+            Envelope::wrap(new stdClass(), [new ReceivedStamp('async'), $existing]),
             $this->stack(),
         );
 
