@@ -1,0 +1,14 @@
+# Composer / dev artefacts
+/vendor/
+/var/
+/composer.lock
+/.phpunit.result.cache
+/.php-cs-fixer.cache
+
+# Local dev Symfony application (not published)
+/playground/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
