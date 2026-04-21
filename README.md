@@ -30,6 +30,8 @@ composer require yoanbernabeu/periscope-bundle
 php bin/console periscope:install
 ```
 
+> New here? Start with the **[Getting Started guide](docs/GETTING-STARTED.md)**.
+
 ## CLI commands
 
 | Command | Description | Exit codes |
