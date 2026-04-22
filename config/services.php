@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
+use YoanBernabeu\PeriscopeBundle\Command\ExportCommand;
 use YoanBernabeu\PeriscopeBundle\Command\HealthCommand;
 use YoanBernabeu\PeriscopeBundle\Command\InstallCommand;
 use YoanBernabeu\PeriscopeBundle\Command\ListMessagesCommand;
@@ -83,4 +84,5 @@ return static function (ContainerConfigurator $container): void {
         ->arg('$calculator', service(HealthCalculator::class));
     $services->get(PurgeCommand::class)
         ->arg('$retentionDays', '%periscope.retention.days%');
+    $services->set(ExportCommand::class);
 };
